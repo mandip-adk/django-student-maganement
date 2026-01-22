@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student List</title>
+</head>
+<body>
+
+<h1>All Students</h1>
+
+<a href="/students/add/">Add Student</a>
+<hr>
+<form method="get">
+    <input type="number" name="rollno" placeholder="Enter roll number">
+    <button type="submit">Search</button>
+</form>
+{% if students %}
+    <ul>
+        {% for student in students %}
+            <li>
+                <a href="/students/{{ student.rollno }}/">
+                    {{ student.rollno }} . {{ student.name }}
+                </a>
+                Class: {{ student.stu_class }} |
+                Marks: {{ student.marks }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No students found.</p>
+{% endif %}
+
+</body>
+</html>
