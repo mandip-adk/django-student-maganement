@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Student</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 30px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Update Student</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input type="text" name="name" value="{{ student.name }}" required>
+    <input type="number" name="rollno" value="{{ student.rollno }}" required>
+    <input type="number" name="stu_class" value="{{ student.stu_class }}" required>
+    <input type="text" name="section" value="{{ student.section }}" required>
+    <input type="number" name="marks" value="{{ student.marks }}" required>
+    <input type="text" name="address" value="{{ student.address }}" required>
+
+    <button type="submit">Update</button>
+</form>
+
+</body>
+</html>

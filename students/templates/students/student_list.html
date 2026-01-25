@@ -5,23 +5,32 @@
 </head>
 <body>
 
+
 <h1>All Students</h1>
 
 <a href="/students/add/">Add Student</a>
 <hr>
+
 <form method="get">
     <input type="number" name="rollno" placeholder="Enter roll number">
     <button type="submit">Search</button>
 </form>
 {% if students %}
     <ul>
-        {% for student in students %}
+        {% for s in students %}
             <li>
-                <a href="/students/{{ student.rollno }}/">
-                    {{ student.rollno }} . {{ student.name }}
+                <a href="/students/{{ s.rollno }}/">
+                    {{ s.rollno }} . {{ s.name }}
                 </a>
-                Class: {{ student.stu_class }} |
-                Marks: {{ student.marks }}
+                Class: {{ s.stu_class }} |
+                Marks: {{ s.marks }}
+
+                <a href="{% url 'update_student' s.id %}">Edit</a>
+                
+                <a href="{% url 'delete_student' s.id %}"
+                onclick ="return confirm('Are you sure?')">Delete
+                </a>
+
             </li>
         {% endfor %}
     </ul>

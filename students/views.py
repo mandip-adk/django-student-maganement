@@ -1,48 +1,55 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from . models import Student
+from rest_framework.decorators import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Student
+from .serializers import StudentSerializer
 
-def student_list(request):
-    rollno = request.GET.get('rollno')
+class StudentListCreateAPIView(APIView):
 
-    if rollno:
-        students = Student.objects.filter(rollno=rollno)
-    else:
+    def get(self, request):
         students = Student.objects.all()
-    return render(request, 'students/student_list.html',{
-        'students': students
-    })
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
 
-def student_detail(request,rollno):
-    student = get_object_or_404(Student, rollno=rollno)
-    return render(request,'students/student_details.html',{
-        'student':student
-    })
+    def post(self, request):
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def add_student(request):
-    if request.method == "POST":
-        name = request.POST.get('name')
-        address = request.POST.get('address')
-        stu_class = request.POST.get('stu_class')
-        rollno = request.POST.get('rollno')
-        section = request.POST.get('section')
-        marks = request.POST.get('marks')
 
-#Duplicate rollno check
-        if Student.objects.filter(rollno=rollno).exists():
-            return render(request, 'students/add_student.html',{
-                'error':'Roll number already exists...'
-            })
-        
-    #save to database
-        Student.objects.create(
-            name=name,
-            address=address,
-            stu_class=stu_class,
-            rollno=rollno,
-            section=section,
-            marks=marks,
-        )
+class StudentDetailAPIView(APIView):
 
-        return redirect('/students/')
+    def get_object(self, id):
+        try:
+            return Student.objects.get(id=id)
+        except Student.DoesNotExist:
+            return None
 
-    return render(request,'students/add_student.html')
+    def get(self, request, id):
+        student = self.get_object(id)
+        if not student:
+            return Response({'error': 'Not found'}, status=404)
+        serializer = StudentSerializer(student)
+        return Response(serializer.data)
+
+    def put(self, request, id):
+        student = self.get_object(id)
+        if not student:
+            return Response({'error': 'Not found'}, status=404)
+
+        serializer = StudentSerializer(student, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, id):
+        student = self.get_object(id)
+        if not student:
+            return Response({'error': 'Not found'}, status=404)
+
+        student.delete()
+        return Response(status=204)
+
